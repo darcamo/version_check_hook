@@ -1,0 +1,9 @@
+- id: version_check
+  name: Version check
+  description: Check if version in pyproject.toml matches __version__ in __init__.py file
+  entry: version_check
+  language: python
+  # types: [python]
+  # args: [-i]
+  files: pyproject\.toml|.*/__init__\.py
+
