@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "version_check"
-version = "0.1.0"
+version = "1.1.0"
 description = "A pre-commit hook to check if version in pyproject.toml matches __version__ in __init__.py file"
 authors = ["Darlan Cavalcante Moreira <darcamo@gmail.com>"]
 license = "MIT"

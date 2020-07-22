@@ -24,6 +24,17 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             for line in lines:
                 if "version" in line:
                     version1 = line.split("=")[-1].strip()
+                    # Break the for loop -> When dependencies are optional they
+                    # their line in `pyproject.toml` is something similar to
+                    # `libbrary_name = {version = "^5.01", optional = true}`
+                    #
+                    # If we do not break the loop the last line with "version"
+                    # string will be the one used and thus the version returned
+                    # will be the version of some optional dependency instead of
+                    # the main project. Assume the version of the main project
+                    # comes before in the toml file we can fix this by breaking
+                    # the first time we find a "version" string.
+                    break
     except FileNotFoundError:
         return 0
 
