@@ -7,7 +7,7 @@ Add this to you `.pre-commit-config.yaml` file
 ```yaml
 repos:
 - repo: https://github.com/darcamo/version_check_hook.git
-  rev: v1.0
+  rev: v1.1
   hooks:
   - id: version_check
 ```
