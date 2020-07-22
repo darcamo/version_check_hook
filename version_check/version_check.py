@@ -1,6 +1,13 @@
 from typing import Optional, Sequence
 import os
 
+
+# Note: It would be easier to use some toml parsing library, but since there is
+# none in the python standard library we don't want to add a dependency to an
+# external library just to read the version and package name from the
+# "pyproject.toml" file
+
+
 def clear_string(version_line: str):
     """
     Get a clean version from the line string containing 'version = xxx'
@@ -17,16 +24,33 @@ def clear_string(version_line: str):
     version = version_line.split("=")[-1].strip()
     return version.replace('"', '').replace("'", "")
 
+
 def main(argv: Optional[Sequence[str]] = None) -> int:
     try:
         with open("pyproject.toml", mode='r') as f:
             lines = f.readlines()
+
+            # Get the package name from the pyproject.toml file -> we will
+            # assume the __init__ file containing the __version__ variable is in
+            # a folder whose name is the package name
+            for line in lines:
+                if "name" in line:
+                    # The line with package name in the pyproject.toml file is
+                    # something such as
+                    # name = "package_name"
+                    #
+                    # We can get the project name (without quotes) with the line
+                    # below
+                    package_name = line.split("=")[-1].strip()[1:-1]
+                    break
+
+            # Get the version from the pyproject.toml file
             for line in lines:
                 if "version" in line:
                     version1 = line.split("=")[-1].strip()
                     # Break the for loop -> When dependencies are optional they
                     # their line in `pyproject.toml` is something similar to
-                    # `libbrary_name = {version = "^5.01", optional = true}`
+                    # `library_name = {version = "^5.01", optional = true}`
                     #
                     # If we do not break the loop the last line with "version"
                     # string will be the one used and thus the version returned
@@ -38,14 +62,16 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     except FileNotFoundError:
         return 0
 
-    package_name = "pyphysim"
     try:
         with open(f"{package_name}/__init__.py", mode='r') as f:
             lines = f.readlines()
+
+            # Get the version from the __init__ file
             for line in lines:
                 if "__version__" in line:
                     version2 = line.split("=")[-1].strip()
     except FileNotFoundError:
+        print(f"There is no '{package_name}/__init__.py' file in folder {os.getcwd()} -> version check will just pass")
         return 0
 
     if not (clear_string(version1) == clear_string(version2)):
